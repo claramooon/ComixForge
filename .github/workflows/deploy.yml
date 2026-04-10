@@ -15,6 +15,9 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Fix smart punctuation
         run: |
           python3 -c "
@@ -30,10 +33,6 @@ jobs:
                       open(path,'w').write(t)
                       print('Fixed:', path)
           "
-
-
-      - name: Install dependencies
-        run: npm install
 
       - name: Build
         run: npm run build

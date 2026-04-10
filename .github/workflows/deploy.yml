@@ -21,16 +21,19 @@ jobs:
       - name: Fix smart punctuation
         run: |
           python3 -c "
-          import os, re
+          import os
           for root, dirs, files in os.walk('src'):
               for f in files:
                   if f.endswith('.jsx'):
                       path = os.path.join(root, f)
-                      t = open(path).read()
+                      t = open(path, encoding='utf-8').read()
                       t = t.replace('\u201c','\"').replace('\u201d','\"')
                       t = t.replace('\u2018',\"'\").replace('\u2019',\"'\")
                       t = t.replace('\u2026','...').replace('\u2013','-').replace('\u2014','--')
-                      open(path,'w').write(t)
+                      t = t.replace('\u2018','backtick').replace('\u0060','\u0060')
+                      t = t.replace('\uff40','backtick')
+                      t = t.replace('backtick','\u0060')
+                      open(path,'w', encoding='utf-8').write(t)
                       print('Fixed:', path)
           "
 

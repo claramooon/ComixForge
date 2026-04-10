@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef } from “react”;
 
 /* ── Constants ── */
 const LAYOUTS = [
@@ -37,7 +37,7 @@ function TBtn({ active, onClick, children }) {
 return (
 <button onClick={onClick} style={{
 fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, fontSize:11, padding:“5px 10px”,
-border:`2px solid ${active ? T.accent : "#ccc"}`, background: active ? T.accent : “#f5f5f5”,
+border:“2px solid “+(active ? T.accent : “#ccc”), background: active ? T.accent : “#f5f5f5”,
 color: active ? T.activeFg : T.fg, cursor:“pointer”, borderRadius:3, whiteSpace:“nowrap”,
 transition:“background .1s, border-color .1s”, boxShadow: active ? “2px 2px 0 #bbb” : “1px 1px 0 #ddd”,
 }}>{children}</button>
@@ -324,7 +324,7 @@ const pp = (i) => ({ index:i, st, image:images[i], onUpload:upload, bubbles:bubb
 const renderGrid = () => {
 const g = layout.grid;
 const grid = (cols,rows,ids) => (
-<div style={{ display:“grid”, gridTemplateColumns:`repeat(${cols},1fr)`, gridTemplateRows:`repeat(${rows},1fr)`, gap:6, height:“100%” }}>
+<div style={{ display:“grid”, gridTemplateColumns:“repeat(”+cols+”,1fr)”, gridTemplateRows:“repeat(”+rows+”,1fr)”, gap:6, height:“100%” }}>
 {ids.map(i=><Panel key={i} {…pp(i)}/>)}
 </div>
 );
@@ -358,7 +358,7 @@ return (
 
   {/* ══ COMIC ══ */}
   <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", padding:"8px 8px 4px" }}>
-    <div style={{ background:st.titleBg, borderBottom:`4px solid ${st.id==="neon"?"#7C4DFF":"#111"}`, padding:"6px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+    <div style={{ background:st.titleBg, borderBottom:"4px solid "+(st.id==="neon"?"#7C4DFF":"#111"), padding:"6px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
       <input value={title} onChange={e=>setTitle(e.target.value)} style={{ fontFamily:"'Bangers',cursive", fontSize:28, letterSpacing:4, color:st.titleColor, background:"transparent", border:"none", outline:"none", WebkitTextStroke:st.id==="neon"?"1px #7C4DFF":"2px #111", textShadow:st.id==="neon"?"0 0 10px currentColor":"2px 2px 0 #111", maxWidth:"75%", cursor:"text" }}/>
       <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:10, fontWeight:700, color:st.titleColor, opacity:0.55 }}>ISSUE #1</span>
     </div>
@@ -370,13 +370,13 @@ return (
   </div>
 
   {/* ══ TOOLBAR ══ */}
-  <div style={{ flexShrink:0, height:104, background:T.bg, borderTop:`4px solid ${T.border}`, boxShadow:"0 -3px 0 #FFD600", overflowX:"auto", overflowY:"hidden", WebkitOverflowScrolling:"touch" }}>
+  <div style={{ flexShrink:0, height:104, background:T.bg, borderTop:"4px solid "+T.border, boxShadow:"0 -3px 0 #FFD600", overflowX:"auto", overflowY:"hidden", WebkitOverflowScrolling:"touch" }}>
     <div style={{ display:"flex", alignItems:"center", height:"100%", minWidth:"max-content", padding:"0 6px" }}>
 
       {/* LIBRARY */}
       <Section label="LIBRARY" minW={190}>
         <button onClick={() => setShowLibrary(true)} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"6px 12px", background:"#FFD600", color:"#111", border:"2px solid #111", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>
-          📚 LIBRARY {library.length > 0 && `(${library.length})`}
+          📚 LIBRARY {library.length > 0 && "("+library.length+")"}
         </button>
         <button onClick={saveComic} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"6px 12px", background:saveBg, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap", transition:"background .2s" }}>{saveLabel}</button>
       </Section>
@@ -407,15 +407,15 @@ return (
       </Section>
       <Divider/>
 
-      <Section label={`TEXT → PANEL ${panel+1}`} minW={255}>
+      <Section label={"TEXT → PANEL "+(panel+1)} minW={255}>
         <input value={bubText} onChange={e=>setBubText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addBub()} placeholder="Type & hit Enter…"
           style={{ fontFamily:"'Comic Neue',cursive", fontWeight:700, fontSize:12, width:150, border:"2px solid #ccc", background:T.input, color:T.fg, padding:"5px 8px", outline:"none", borderRadius:3, boxShadow:"inset 1px 1px 3px #eee" }}/>
         <button onClick={addBub} style={{ fontFamily:"'Bangers',cursive", fontSize:15, padding:"5px 14px", background:T.accent, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb" }}>ADD</button>
       </Section>
       <Divider/>
 
-      <Section label={`SFX → PANEL ${panel+1}`} minW={355}>
-        {SFX_COLORS.map(c=><div key={c} onClick={()=>setSfxColor(c)} style={{ width:19, height:19, background:c, border:`3px solid ${sfxColor===c?"#111":"#ddd"}`, cursor:"pointer", borderRadius:3, flexShrink:0 }}/>)}
+      <Section label={"SFX → PANEL "+(panel+1)} minW={355}>
+        {SFX_COLORS.map(c=><div key={c} onClick={()=>setSfxColor(c)} style={{ width:19, height:19, background:c, border:"3px solid "+(sfxColor===c?"#111":"#ddd"), cursor:"pointer", borderRadius:3, flexShrink:0 }}/>)}
         <div style={{ width:1, background:"#ddd", height:22, margin:"0 4px", flexShrink:0 }}/>
         {SFX_LIST.map(sfx=><button key={sfx} onClick={()=>addSfx(sfx)} style={{ fontFamily:"'Bangers',cursive", fontSize:14, padding:"3px 7px", border:"2px solid #ddd", background:"#f5f5f5", color:sfxColor, WebkitTextStroke:"0.5px #333", cursor:"pointer", borderRadius:3, whiteSpace:"nowrap", boxShadow:"1px 1px 0 #ddd" }}>{sfx}</button>)}
       </Section>

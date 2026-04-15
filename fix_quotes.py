@@ -1,30 +1,10 @@
 import os
-lq = bytes([0xe2,0x80,0x9c])
-rq = bytes([0xe2,0x80,0x9d])
-ls = bytes([0xe2,0x80,0x98])
-rs = bytes([0xe2,0x80,0x99])
-el = bytes([0xe2,0x80,0xa6])
-nd = bytes([0xe2,0x80,0x93])
-md = bytes([0xe2,0x80,0x94])
-dq = bytes([34])
-sq = bytes([39])
-dd = bytes([46,46,46])
-hy = bytes([45])
+from functools import reduce
 rb = bytes([114,98]).decode()
 wb = bytes([119,98]).decode()
-srcdir = bytes([115,114,99]).decode()
-jext = bytes([46,106,115,120]).decode()
-for root,dirs,files in os.walk(srcdir):
-for f in files:
-if f.endswith(jext):
-p = os.path.join(root,f)
-data = open(p,rb).read()
-data = data.replace(lq,dq)
-data = data.replace(rq,dq)
-data = data.replace(ls,sq)
-data = data.replace(rs,sq)
-data = data.replace(el,dd)
-data = data.replace(nd,hy)
-data = data.replace(md,hy)
-open(p,wb).write(data)
-print(p)
+src = bytes([115,114,99]).decode()
+ext = bytes([46,106,115,120]).decode()
+reps = [(bytes([0xe2,0x80,0x9c]),bytes([34])),(bytes([0xe2,0x80,0x9d]),bytes([34])),(bytes([0xe2,0x80,0x98]),bytes([39])),(bytes([0xe2,0x80,0x99]),bytes([39])),(bytes([0xe2,0x80,0xa6]),bytes([46,46,46])),(bytes([0xe2,0x80,0x93]),bytes([45])),(bytes([0xe2,0x80,0x94]),bytes([45]))]
+paths = [os.path.join(r,f) for r,d,fs in os.walk(src) for f in fs if f.endswith(ext)]
+[open(p,wb).write(reduce(lambda t,rv: t.replace(rv[0],rv[1]),reps,open(p,rb).read())) for p in paths]
+print(paths)

@@ -1,4 +1,5 @@
 import { useState, useRef } from “react”;
+import ReactDOM from “react-dom/client”;
 
 const LAYOUTS = [
 { id:“2x2”,    label:“2x2”,     panels:4, grid:“2x2”    },
@@ -494,3 +495,5 @@ return (
 
 );
 }
+
+ReactDOM.createRoot(document.getElementById(“root”)).render(<ComicMaker />);

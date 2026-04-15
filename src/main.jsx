@@ -315,7 +315,7 @@ onDragOver={e => e.preventDefault()}>
 : <div style={{ display:“flex”, flexDirection:“column”, alignItems:“center”, justifyContent:“center”, height:“100%”, gap:10 }}>
 <button onClick={e => { e.stopPropagation(); fileRef.current.click(); }}
 style={{ fontFamily:”‘Bangers’,cursive”, fontSize:18, letterSpacing:2, padding:“14px 24px”, background:”#FF1744”, color:”#fff”, border:“3px solid #111”, boxShadow:“4px 4px 0 #111”, cursor:“pointer”, borderRadius:4, display:“flex”, flexDirection:“column”, alignItems:“center”, gap:6 }}>
-<span style={{ fontSize:32 }}>🖼</span>+ ADD IMAGE
+<span style={{ fontSize:32 }}>[img]</span>+ ADD IMAGE
 </button>
 <span style={{ fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:1, color: st.id===“neon”||st.id===“noir” ? “#555” : “#bbb” }}>PANEL {index+1}</span>
 </div>

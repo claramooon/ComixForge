@@ -19,30 +19,7 @@ jobs:
         run: npm install
 
       - name: Fix smart quotes
-        run: |
-          python3 << 'PYEOF'
-          import os
-          replacements = [
-              (b'\xe2\x80\x9c', b'"'),
-              (b'\xe2\x80\x9d', b'"'),
-              (b'\xe2\x80\x98', b"'"),
-              (b'\xe2\x80\x99', b"'"),
-              (b'\xe2\x80\xa6', b'...'),
-              (b'\xe2\x80\x93', b'-'),
-              (b'\xe2\x80\x94', b'-'),
-          ]
-          for root, dirs, files in os.walk('src'):
-              for fname in files:
-                  if fname.endswith('.jsx') or fname.endswith('.js'):
-                      path = os.path.join(root, fname)
-                      with open(path, 'rb') as f:
-                          data = f.read()
-                      for bad, good in replacements:
-                          data = data.replace(bad, good)
-                      with open(path, 'wb') as f:
-                          f.write(data)
-                      print('Fixed:', path)
-          PYEOF
+        run: python3 fix_quotes.py
 
       - name: Build
         run: npm run build

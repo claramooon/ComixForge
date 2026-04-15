@@ -1,6 +1,12 @@
 import { useState, useRef } from “react”;
 import ReactDOM from “react-dom/client”;
 
+window.onerror = function(msg, src, line, col, err) {
+document.getElementById(“root”).innerHTML =
+“<div style='padding:20px;font-family:monospace;color:red;background:#fff'>” +
+“<b>ERROR:</b><br/>” + msg + “<br/>Line: “ + line + “</div>”;
+};
+
 const LAYOUTS = [
 { id:“2x2”,    label:“2x2”,     panels:4, grid:“2x2”    },
 { id:“1+2”,    label:“Big+Two”, panels:3, grid:“1+2”    },
@@ -417,7 +423,7 @@ const saveLabel = saveStatus === “saved” ? “SAVED!” : “SAVE”;
 const saveBg    = saveStatus === “saved” ? “#00C853” : “#FF1744”;
 
 return (
-<div style={{ width:“100vw”, height:“100dvh”, display:“flex”, flexDirection:“column”, overflow:“hidden”, background:”#111” }}>
+<div style={{ width:“100vw”, height:“100vh”, display:“flex”, flexDirection:“column”, overflow:“hidden”, background:”#111” }}>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700&display=swap" rel="stylesheet"/>
 
 ```

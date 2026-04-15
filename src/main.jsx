@@ -1,11 +1,30 @@
 import { useState, useRef } from “react”;
+import React from “react”;
 import ReactDOM from “react-dom/client”;
 
-window.onerror = function(msg, src, line, col, err) {
-document.getElementById(“root”).innerHTML =
-“<div style='padding:20px;font-family:monospace;color:red;background:#fff'>” +
-“<b>ERROR:</b><br/>” + msg + “<br/>Line: “ + line + “</div>”;
-};
+class ErrorBoundary extends React.Component {
+constructor(props) {
+super(props);
+this.state = { hasError: false, error: null };
+}
+static getDerivedStateFromError(error) {
+return { hasError: true, error: error };
+}
+render() {
+if (this.state.hasError) {
+return React.createElement(“div”,
+{ style: { padding: 30, color: “red”, background: “white”, fontFamily: “monospace”, fontSize: 14 } },
+React.createElement(“b”, null, “COMIXFORGE ERROR:”),
+React.createElement(“br”),
+this.state.error ? this.state.error.message : “Unknown error”,
+React.createElement(“br”),
+React.createElement(“br”),
+this.state.error ? this.state.error.stack : “”
+);
+}
+return this.props.children;
+}
+}
 
 const LAYOUTS = [
 { id:“2x2”,    label:“2x2”,     panels:4, grid:“2x2”    },
@@ -502,4 +521,6 @@ return (
 );
 }
 
-ReactDOM.createRoot(document.getElementById(‘root’)).render(<ComicMaker />);
+ReactDOM.createRoot(document.getElementById(‘root’)).render(
+React.createElement(ErrorBoundary, null, React.createElement(ComicMaker))
+);

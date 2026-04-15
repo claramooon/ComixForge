@@ -1,8 +1,7 @@
 import { useState, useRef } from “react”;
 
-/* ── Constants ── */
 const LAYOUTS = [
-{ id:“2x2”,    label:“2×2”,     panels:4, grid:“2x2”    },
+{ id:“2x2”,    label:“2x2”,     panels:4, grid:“2x2”    },
 { id:“1+2”,    label:“Big+Two”, panels:3, grid:“1+2”    },
 { id:“2+1”,    label:“Two+Big”, panels:3, grid:“2+1”    },
 { id:“3col”,   label:“3 Col”,   panels:3, grid:“3col”   },
@@ -32,11 +31,10 @@ const T = { bg:”#fff”, border:”#FF1744”, fg:”#111”, accent:”#FF174
 
 const newPage = () => ({ id: Date.now(), images:{}, bubbles:[] });
 
-/* ── Toolbar primitives — module-level for stable identity ── */
 function TBtn({ active, onClick, children }) {
 return (
 <button onClick={onClick} style={{
-fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, fontSize:11, padding:“5px 10px”,
+fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, fontSize:11, padding:“4px 8px”,
 border:“2px solid “+(active ? T.accent : “#ccc”), background: active ? T.accent : “#f5f5f5”,
 color: active ? T.activeFg : T.fg, cursor:“pointer”, borderRadius:3, whiteSpace:“nowrap”,
 transition:“background .1s, border-color .1s”, boxShadow: active ? “2px 2px 0 #bbb” : “1px 1px 0 #ddd”,
@@ -44,150 +42,238 @@ transition:“background .1s, border-color .1s”, boxShadow: active ? “2px 2p
 );
 }
 function Divider() {
-return <div style={{ width:1, background:”#ddd”, alignSelf:“stretch”, margin:“10px 2px”, flexShrink:0 }}/>;
+return <div style={{ width:1, background:”#ddd”, alignSelf:“stretch”, margin:“8px 2px”, flexShrink:0 }}/>;
 }
 function Section({ label, children, minW }) {
 return (
-<div style={{ display:“flex”, flexDirection:“column”, justifyContent:“center”, padding:“0 14px”, minWidth:minW||“auto”, gap:5 }}>
-<div style={{ fontFamily:”‘Bangers’,cursive”, fontSize:12, letterSpacing:2, color:T.accent, whiteSpace:“nowrap” }}>{label}</div>
-<div style={{ display:“flex”, gap:5, alignItems:“center” }}>{children}</div>
+<div style={{ display:“flex”, flexDirection:“column”, justifyContent:“center”, padding:“0 10px”, minWidth:minW||“auto”, gap:4 }}>
+<div style={{ fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:2, color:T.accent, whiteSpace:“nowrap” }}>{label}</div>
+<div style={{ display:“flex”, gap:4, alignItems:“center” }}>{children}</div>
 </div>
 );
 }
 
-/* ── Library drawer (in-memory) ── */
 function Library({ onClose, onLoad, entries, onDelete }) {
 const styleColor = { classic:”#FF1744”, noir:”#333”, pop:”#E91E63”, retro:”#8D6E63”, neon:”#00E5FF” };
 const fmtDate = (ts) => new Date(ts).toLocaleTimeString([], { hour:“2-digit”, minute:“2-digit” });
-
 return (
 <div style={{ position:“fixed”, inset:0, zIndex:100, display:“flex”, flexDirection:“column”, alignItems:“stretch”, justifyContent:“flex-end” }}>
 <div onClick={onClose} style={{ position:“absolute”, inset:0, background:“rgba(0,0,0,0.55)”, backdropFilter:“blur(2px)” }}/>
 <div style={{ position:“relative”, background:”#fff”, borderTop:“5px solid #FF1744”, boxShadow:“0 -6px 0 #FFD600”, maxHeight:“72vh”, display:“flex”, flexDirection:“column” }}>
-
-```
-    <div style={{ background:"#FF1744", padding:"10px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-      <span style={{ fontFamily:"'Bangers',cursive", fontSize:24, letterSpacing:3, color:"#FFD600", WebkitTextStroke:"1px #111", textShadow:"2px 2px 0 #111" }}>📚 MY LIBRARY</span>
-      <button onClick={onClose} style={{ fontFamily:"'Bangers',cursive", fontSize:16, background:"#FFD600", color:"#111", border:"2px solid #111", padding:"4px 12px", cursor:"pointer", borderRadius:3 }}>CLOSE ✕</button>
-    </div>
-
-    <div style={{ overflowY:"auto", padding:16, flex:1 }}>
-      {entries.length === 0 ? (
-        <div style={{ fontFamily:"'Comic Neue',cursive", fontWeight:700, color:"#aaa", padding:30, textAlign:"center", fontSize:14 }}>
-          No saved comics yet!<br/>Hit <span style={{ color:"#FF1744" }}>💾 SAVE</span> to add one.
-        </div>
-      ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(190px,1fr))", gap:12 }}>
-          {entries.map((e, idx) => (
-            <div key={e.savedAt} style={{ border:"3px solid #111", background:"#fffde7", boxShadow:"4px 4px 0 #111", display:"flex", flexDirection:"column", overflow:"hidden" }}>
-              <div style={{ background: styleColor[e.styleId] || "#FF1744", padding:"10px 12px", borderBottom:"3px solid #111" }}>
-                <div style={{ fontFamily:"'Bangers',cursive", fontSize:18, color:"#FFD600", WebkitTextStroke:"1px #111", textShadow:"1px 1px 0 #111", letterSpacing:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{e.title}</div>
-                <div style={{ fontFamily:"'Comic Neue',cursive", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.85)", marginTop:2 }}>{e.pageCount} page{e.pageCount!==1?"s":""} · {e.layoutLabel} · {e.styleName}</div>
-              </div>
-              <div style={{ padding:"8px 10px", flex:1, display:"flex", flexDirection:"column", gap:8 }}>
-                <div style={{ fontFamily:"'Comic Neue',cursive", fontSize:10, color:"#888" }}>Saved at {fmtDate(e.savedAt)}</div>
-                <div style={{ display:"flex", gap:6, marginTop:"auto" }}>
-                  <button onClick={() => { onLoad(e); onClose(); }} style={{ flex:1, fontFamily:"'Bangers',cursive", fontSize:13, padding:"5px 0", background:"#FF1744", color:"#fff", border:"2px solid #111", cursor:"pointer", borderRadius:3, letterSpacing:1 }}>OPEN</button>
-                  <button onClick={() => onDelete(idx)} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"5px 8px", background:"#fff", color:"#888", border:"2px solid #ccc", cursor:"pointer", borderRadius:3 }}>🗑</button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-    <div style={{ borderTop:"2px solid #eee", padding:"8px 16px", background:"#fffde7", flexShrink:0 }}>
-      <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:10, color:"#aaa", fontWeight:700 }}>💡 Library saves for this session — still here as long as this tab is open.</span>
-    </div>
-  </div>
+<div style={{ background:”#FF1744”, padding:“10px 20px”, display:“flex”, alignItems:“center”, justifyContent:“space-between”, flexShrink:0 }}>
+<span style={{ fontFamily:”‘Bangers’,cursive”, fontSize:24, letterSpacing:3, color:”#FFD600”, WebkitTextStroke:“1px #111”, textShadow:“2px 2px 0 #111” }}>MY LIBRARY</span>
+<button onClick={onClose} style={{ fontFamily:”‘Bangers’,cursive”, fontSize:16, background:”#FFD600”, color:”#111”, border:“2px solid #111”, padding:“4px 12px”, cursor:“pointer”, borderRadius:3 }}>CLOSE X</button>
 </div>
-```
-
+<div style={{ overflowY:“auto”, padding:16, flex:1 }}>
+{entries.length === 0 ? (
+<div style={{ fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, color:”#aaa”, padding:30, textAlign:“center”, fontSize:14 }}>
+No saved comics yet! Hit SAVE to add one.
+</div>
+) : (
+<div style={{ display:“grid”, gridTemplateColumns:“repeat(auto-fill, minmax(190px,1fr))”, gap:12 }}>
+{entries.map((e, idx) => (
+<div key={e.savedAt} style={{ border:“3px solid #111”, background:”#fffde7”, boxShadow:“4px 4px 0 #111”, display:“flex”, flexDirection:“column”, overflow:“hidden” }}>
+<div style={{ background: styleColor[e.styleId] || “#FF1744”, padding:“10px 12px”, borderBottom:“3px solid #111” }}>
+<div style={{ fontFamily:”‘Bangers’,cursive”, fontSize:18, color:”#FFD600”, WebkitTextStroke:“1px #111”, textShadow:“1px 1px 0 #111”, letterSpacing:2, overflow:“hidden”, textOverflow:“ellipsis”, whiteSpace:“nowrap” }}>{e.title}</div>
+<div style={{ fontFamily:”‘Comic Neue’,cursive”, fontSize:10, fontWeight:700, color:“rgba(255,255,255,0.85)”, marginTop:2 }}>{e.pageCount} page{e.pageCount!==1?“s”:””} - {e.layoutLabel} - {e.styleName}</div>
+</div>
+<div style={{ padding:“8px 10px”, flex:1, display:“flex”, flexDirection:“column”, gap:8 }}>
+<div style={{ fontFamily:”‘Comic Neue’,cursive”, fontSize:10, color:”#888” }}>Saved at {fmtDate(e.savedAt)}</div>
+<div style={{ display:“flex”, gap:6, marginTop:“auto” }}>
+<button onClick={() => { onLoad(e); onClose(); }} style={{ flex:1, fontFamily:”‘Bangers’,cursive”, fontSize:13, padding:“5px 0”, background:”#FF1744”, color:”#fff”, border:“2px solid #111”, cursor:“pointer”, borderRadius:3, letterSpacing:1 }}>OPEN</button>
+<button onClick={() => onDelete(idx)} style={{ fontFamily:”‘Bangers’,cursive”, fontSize:13, padding:“5px 8px”, background:”#fff”, color:”#888”, border:“2px solid #ccc”, cursor:“pointer”, borderRadius:3 }}>X</button>
+</div>
+</div>
+</div>
+))}
+</div>
+)}
+</div>
+<div style={{ borderTop:“2px solid #eee”, padding:“6px 16px”, background:”#fffde7”, flexShrink:0 }}>
+<span style={{ fontFamily:”‘Comic Neue’,cursive”, fontSize:10, color:”#aaa”, fontWeight:700 }}>Library saves for this session only.</span>
+</div>
+</div>
+</div>
 );
 }
 
-/* ── ComicBubble ── */
-function ComicBubble({ bubble, onDelete, onMove, panelRef }) {
+function ComicBubble({ bubble, onDelete, onMove, onTransform, panelRef }) {
 const dragging  = useRef(false);
+const pinching  = useRef(false);
 const offset    = useRef({ x:0, y:0 });
+const lastDist  = useRef(0);
+const lastAngle = useRef(0);
 const bubbleRef = useRef();
 
-const getCoords = (e) => e.touches?.length > 0
+const getCoords = (e) => e.touches && e.touches.length > 0
 ? { x:e.touches[0].clientX, y:e.touches[0].clientY }
 : { x:e.clientX, y:e.clientY };
+
+const getTouchDist = (touches) => {
+const dx = touches[1].clientX - touches[0].clientX;
+const dy = touches[1].clientY - touches[0].clientY;
+return Math.sqrt(dx*dx + dy*dy);
+};
+
+const getTouchAngle = (touches) => {
+return Math.atan2(touches[1].clientY - touches[0].clientY, touches[1].clientX - touches[0].clientX) * 180 / Math.PI;
+};
 
 const startDrag = (e) => {
 if (e.target.tagName === “BUTTON”) return;
 e.preventDefault();
+
+```
+if (e.touches && e.touches.length === 2) {
+  pinching.current = true;
+  dragging.current = false;
+  lastDist.current  = getTouchDist(e.touches);
+  lastAngle.current = getTouchAngle(e.touches);
+  const move = (ev) => {
+    if (!pinching.current || !ev.touches || ev.touches.length < 2) return;
+    ev.preventDefault();
+    const newDist  = getTouchDist(ev.touches);
+    const newAngle = getTouchAngle(ev.touches);
+    const scaleDelta = newDist / lastDist.current;
+    const angleDelta = newAngle - lastAngle.current;
+    lastDist.current  = newDist;
+    lastAngle.current = newAngle;
+    onTransform(bubble.id, scaleDelta, angleDelta);
+  };
+  const up = () => {
+    pinching.current = false;
+    window.removeEventListener("touchmove", move);
+    window.removeEventListener("touchend",  up);
+  };
+  window.addEventListener("touchmove", move, { passive:false });
+  window.addEventListener("touchend",  up);
+  return;
+}
+
 const { x:cx, y:cy } = getCoords(e);
 const pr = panelRef.current.getBoundingClientRect();
 dragging.current = true;
 offset.current = { x: cx - pr.left - bubble.x, y: cy - pr.top - bubble.y };
 const move = (ev) => {
-if (!dragging.current) return;
-const { x:mx, y:my } = getCoords(ev);
-const r  = panelRef.current.getBoundingClientRect();
-const bw = bubbleRef.current?.offsetWidth  ?? 0;
-const bh = bubbleRef.current?.offsetHeight ?? 0;
-onMove(bubble.id,
-Math.max(0, Math.min(mx - r.left - offset.current.x, r.width  - bw)),
-Math.max(0, Math.min(my - r.top  - offset.current.y, r.height - bh)),
-);
+  if (!dragging.current) return;
+  if (ev.touches && ev.touches.length >= 2) return;
+  const { x:mx, y:my } = getCoords(ev);
+  const r  = panelRef.current.getBoundingClientRect();
+  const bw = bubbleRef.current ? bubbleRef.current.offsetWidth  : 0;
+  const bh = bubbleRef.current ? bubbleRef.current.offsetHeight : 0;
+  onMove(bubble.id,
+    Math.max(0, Math.min(mx - r.left - offset.current.x, r.width  - bw)),
+    Math.max(0, Math.min(my - r.top  - offset.current.y, r.height - bh)),
+  );
 };
 const up = () => {
-dragging.current = false;
-window.removeEventListener(“mousemove”, move);
-window.removeEventListener(“mouseup”,   up);
-window.removeEventListener(“touchmove”, move);
-window.removeEventListener(“touchend”,  up);
+  dragging.current = false;
+  window.removeEventListener("mousemove", move);
+  window.removeEventListener("mouseup",   up);
+  window.removeEventListener("touchmove", move);
+  window.removeEventListener("touchend",  up);
 };
-window.addEventListener(“mousemove”, move, { passive:false });
-window.addEventListener(“mouseup”,   up);
-window.addEventListener(“touchmove”, move, { passive:false });
-window.addEventListener(“touchend”,  up);
+window.addEventListener("mousemove", move, { passive:false });
+window.addEventListener("mouseup",   up);
+window.addEventListener("touchmove", move, { passive:false });
+window.addEventListener("touchend",  up);
+```
+
 };
+
+const scale    = bubble.scale    !== undefined ? bubble.scale    : 1;
+const rotation = bubble.rotation !== undefined ? bubble.rotation : 0;
 
 const handlers = { onMouseDown:startDrag, onTouchStart:startDrag };
-const base = { position:“absolute”, left:bubble.x, top:bubble.y, cursor:“grab”, userSelect:“none”, zIndex:20, touchAction:“none” };
-const DelBtn = () => <button onClick={() => onDelete(bubble.id)} style={{ position:“absolute”, top:-9, right:-9, background:”#111”, color:”#fff”, border:“none”, borderRadius:“50%”, width:18, height:18, fontSize:10, cursor:“pointer”, lineHeight:“18px”, padding:0, zIndex:30, WebkitTextStroke:“0”, textShadow:“none” }}>✕</button>;
 
+/* transformOrigin center so pinch scales from the middle of the bubble */
+const base = {
+position:“absolute”, left:bubble.x, top:bubble.y,
+cursor:“grab”, userSelect:“none”, zIndex:20, touchAction:“none”,
+transform:“scale(”+scale+”) rotate(”+rotation+“deg)”,
+transformOrigin:“center”,
+};
+
+const DelBtn = () => (
+<button onClick={() => onDelete(bubble.id)} style={{
+position:“absolute”, top:-9, right:-9,
+background:”#111”, color:”#fff”, border:“none”, borderRadius:“50%”,
+width:18, height:18, fontSize:10, cursor:“pointer”, lineHeight:“18px”,
+padding:0, zIndex:30, WebkitTextStroke:“0”, textShadow:“none”,
+}}>X</button>
+);
+
+/* ── SFX ── */
 if (bubble.type === “sfx”) return (
-<div ref={bubbleRef} {…handlers} style={{ …base, fontFamily:”‘Bangers’,cursive”, fontSize:40, color:bubble.color, WebkitTextStroke:“2px #111”, textShadow:“3px 3px 0 #111”, transform:“rotate(-8deg)”, whiteSpace:“nowrap” }}>{bubble.text}<DelBtn/></div>
+<div ref={bubbleRef} {…handlers} style={{ …base, fontFamily:”‘Bangers’,cursive”, fontSize:40, color:bubble.color, WebkitTextStroke:“2px #111”, textShadow:“3px 3px 0 #111”, whiteSpace:“nowrap”, position:“absolute” }}>
+{bubble.text}<DelBtn/>
+</div>
 );
+
+/* ── Caption ── */
 if (bubble.type === “caption”) return (
-<div ref={bubbleRef} {…handlers} style={{ …base, background:”#FFD600”, border:“3px solid #111”, padding:“6px 10px”, fontFamily:”‘Comic Neue’,cursive”, fontSize:13, fontWeight:700, color:”#111”, boxShadow:“3px 3px 0 #111” }}>{bubble.text}<DelBtn/></div>
+<div ref={bubbleRef} {…handlers} style={{ …base, background:”#FFD600”, border:“3px solid #111”, padding:“6px 10px”, fontFamily:”‘Comic Neue’,cursive”, fontSize:13, fontWeight:700, color:”#111”, boxShadow:“3px 3px 0 #111” }}>
+{bubble.text}<DelBtn/>
+</div>
 );
+
+/* ── Shout: red spiky explosion + yellow inner oval + integrated SW tail ── */
 if (bubble.type === “shout”) return (
 <div ref={bubbleRef} {…handlers} style={{ …base }}>
-<svg width=“170” height=“95” viewBox=“0 0 160 90” style={{ overflow:“visible”, display:“block” }}>
-<polygon points="80,5 100,25 148,10 130,40 155,55 120,55 115,80 80,58 45,80 40,55 5,55 30,40 12,10 60,25" fill="#FFD600" stroke="#111" strokeWidth="3"/>
-<text x="80" y="52" textAnchor="middle" fontFamily="Bangers,cursive" fontSize="15" fill="#111">{bubble.text}</text>
-</svg><DelBtn/>
+<svg width=“185” height=“125” viewBox=“0 0 185 110” style={{ overflow:“visible”, display:“block” }}>
+{/* Red outer explosion with SW tail built into the polygon */}
+<polygon
+points="92,4 108,26 155,10 135,36 165,44 133,54 158,70 124,66 120,90 92,70 62,90 60,66 26,70 50,54 18,44 48,36 28,10 74,26"
+fill="#FF1744" stroke="#111" strokeWidth="3"/>
+{/* SW tail - part of the red explosion, between the bottom-left spike points */}
+<polygon points="62,88 22,118 68,78" fill="#FF1744" stroke="#111" strokeWidth="3"/>
+{/* Cover tail join with solid fill so it merges cleanly */}
+<polygon points="62,88 68,78 60,84" fill="#FF1744" stroke="none"/>
+{/* Yellow inner area for text */}
+<ellipse cx="92" cy="52" rx="54" ry="32" fill="#FFD600" stroke="#111" strokeWidth="2"/>
+<text x="92" y="57" textAnchor="middle" fontFamily="Bangers,cursive" fontSize="16" fill="#111">{bubble.text}</text>
+</svg>
+<DelBtn/>
 </div>
 );
+
+/* ── Thought: proper cloud shape using bezier curves ── */
 if (bubble.type === “thought”) return (
 <div ref={bubbleRef} {…handlers} style={{ …base }}>
-<div style={{ background:”#fff”, border:“3px solid #111”, borderRadius:“50% 50% 50% 50%/60% 60% 40% 40%”, padding:“10px 14px”, fontFamily:”‘Comic Neue’,cursive”, fontSize:13, fontWeight:700, color:”#111”, boxShadow:“3px 3px 0 #111”, position:“relative” }}>
-{bubble.text}
-<span style={{ position:“absolute”, bottom:-14, left:20, width:10, height:10, background:”#fff”, border:“3px solid #111”, borderRadius:“50%”, display:“block” }}/>
-<span style={{ position:“absolute”, bottom:-24, left:16, width:7, height:7, background:”#fff”, border:“3px solid #111”, borderRadius:“50%”, display:“block” }}/>
-</div><DelBtn/>
+<svg width=“180” height=“88” viewBox=”-6 -6 186 94” style={{ overflow:“visible”, display:“block” }}>
+{/* Cloud body using cubic bezier curves - 3 bumps across the top, flat bottom */}
+<path
+d="M 18,70 C 2,70 0,54 12,48 C 6,30 24,18 48,26 C 50,10 72,3 90,13 C 96,3 120,3 130,20 C 136,8 158,12 162,32 C 172,46 168,70 150,70 Z"
+fill="#fff" stroke="#111" strokeWidth="3"/>
+{/* Thought dots trailing SW */}
+<circle cx="14" cy="78" r="5.5" fill="#fff" stroke="#111" strokeWidth="2.5"/>
+<circle cx="7"  cy="87" r="4"   fill="#fff" stroke="#111" strokeWidth="2"/>
+<circle cx="1"  cy="95" r="2.5" fill="#fff" stroke="#111" strokeWidth="2"/>
+{/* Text centred in cloud */}
+<text x="88" y="50" textAnchor="middle" dominantBaseline="middle" fontFamily="Comic Neue,cursive" fontSize="13" fontWeight="bold" fill="#111">{bubble.text}</text>
+</svg>
+<DelBtn/>
 </div>
 );
+
+/* ── Speech: SVG path with explicit SW tail ── */
 return (
 <div ref={bubbleRef} {…handlers} style={{ …base }}>
-<div style={{ background:”#fff”, border:“3px solid #111”, borderRadius:12, padding:“10px 14px”, fontFamily:”‘Comic Neue’,cursive”, fontSize:13, fontWeight:700, color:”#111”, boxShadow:“3px 3px 0 #111”, position:“relative” }}>
-{bubble.text}
-<div style={{ position:“absolute”, bottom:-13, left:20, width:0, height:0, borderLeft:“10px solid transparent”, borderRight:“4px solid transparent”, borderTop:“13px solid #111” }}/>
-<div style={{ position:“absolute”, bottom:-10, left:22, width:0, height:0, borderLeft:“8px solid transparent”, borderRight:“3px solid transparent”, borderTop:“10px solid #fff” }}/>
-</div><DelBtn/>
+<svg width=“168” height=“80” viewBox=”-3 -3 174 83” style={{ overflow:“visible”, display:“block” }}>
+{/* Bubble body with SW tail: the tail exits bottom-left and tip points down-left */}
+<path
+d="M 12,0 L 150,0 Q 162,0 162,12 L 162,46 Q 162,58 150,58 L 36,58 L 14,76 L 24,58 L 12,58 Q 0,58 0,46 L 0,12 Q 0,0 12,0 Z"
+fill="#fff" stroke="#111" strokeWidth="3"/>
+<text x="81" y="31" textAnchor="middle" dominantBaseline="middle" fontFamily="Comic Neue,cursive" fontSize="13" fontWeight="bold" fill="#111">{bubble.text}</text>
+</svg>
+<DelBtn/>
 </div>
 );
 }
 
-/* ── Image compression — resizes to max 900px, JPEG 0.75 quality ── */
-function compressImage(dataUrl, maxDim = 700, quality = 0.65) {
+function compressImage(dataUrl, maxDim, quality) {
+if (maxDim === undefined) maxDim = 700;
+if (quality === undefined) quality = 0.65;
 return new Promise((resolve) => {
 const img = new Image();
 img.onload = () => {
@@ -199,13 +285,12 @@ canvas.width = w; canvas.height = h;
 canvas.getContext(“2d”).drawImage(img, 0, 0, w, h);
 resolve(canvas.toDataURL(“image/jpeg”, quality));
 };
-img.onerror = () => resolve(dataUrl); // fallback: use original
+img.onerror = () => resolve(dataUrl);
 img.src = dataUrl;
 });
 }
 
-/* ── Panel ── */
-function Panel({ index, st, image, onUpload, bubbles, onDelete, onMove, selected, onSelect }) {
+function Panel({ index, st, image, onUpload, bubbles, onDelete, onMove, onTransform, selected, onSelect }) {
 const fileRef  = useRef();
 const panelRef = useRef();
 const read = (file) => {
@@ -220,46 +305,30 @@ const handleClick = (e) => { if (e.target.closest(“button”) || e.target.tagN
 return (
 <div ref={panelRef} onClick={handleClick}
 style={{ flex:1, position:“relative”, overflow:“hidden”, border: selected ? “4px solid #FFD600” : st.border, background:st.panelBg, minHeight:60, boxShadow: selected ? “0 0 0 3px #FF1744, inset 0 0 0 2px #FFD600” : “none”, cursor:“pointer”, transition:“box-shadow .15s, border-color .15s” }}
-onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f?.type.startsWith(“image/”)) read(f); }}
+onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f && f.type.startsWith(“image/”)) read(f); }}
 onDragOver={e => e.preventDefault()}>
 {selected && (
-<div style={{ position:“absolute”, top:6, left:6, zIndex:25, background:”#FF1744”, color:”#FFD600”, fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:1, padding:“2px 7px”, border:“2px solid #FFD600”, boxShadow:“1px 1px 0 #111”, pointerEvents:“none” }}>✏️ ADDING HERE</div>
+<div style={{ position:“absolute”, top:6, left:6, zIndex:25, background:”#FF1744”, color:”#FFD600”, fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:1, padding:“2px 7px”, border:“2px solid #FFD600”, boxShadow:“1px 1px 0 #111”, pointerEvents:“none” }}>ADDING HERE</div>
 )}
 {image
 ? <img src={image} alt=”” style={{ width:“100%”, height:“100%”, objectFit:“cover”, filter:st.filter, display:“block” }}/>
 : <div style={{ display:“flex”, flexDirection:“column”, alignItems:“center”, justifyContent:“center”, height:“100%”, gap:10 }}>
-<button
-onClick={e => { e.stopPropagation(); fileRef.current.click(); }}
-style={{
-fontFamily:”‘Bangers’,cursive”, fontSize:18, letterSpacing:2,
-padding:“14px 24px”,
-background:”#FF1744”, color:”#fff”,
-border:“3px solid #111”,
-boxShadow:“4px 4px 0 #111”,
-cursor:“pointer”, borderRadius:4,
-display:“flex”, flexDirection:“column”, alignItems:“center”, gap:6,
-}}
->
-<span style={{ fontSize:32 }}>🖼️</span>
-+ ADD IMAGE
+<button onClick={e => { e.stopPropagation(); fileRef.current.click(); }}
+style={{ fontFamily:”‘Bangers’,cursive”, fontSize:18, letterSpacing:2, padding:“14px 24px”, background:”#FF1744”, color:”#fff”, border:“3px solid #111”, boxShadow:“4px 4px 0 #111”, cursor:“pointer”, borderRadius:4, display:“flex”, flexDirection:“column”, alignItems:“center”, gap:6 }}>
+<span style={{ fontSize:32 }}>🖼</span>+ ADD IMAGE
 </button>
-<span style={{ fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:1, color: st.id===“neon”||st.id===“noir” ? “#555” : “#bbb” }}>
-PANEL {index+1}
-</span>
+<span style={{ fontFamily:”‘Bangers’,cursive”, fontSize:11, letterSpacing:1, color: st.id===“neon”||st.id===“noir” ? “#555” : “#bbb” }}>PANEL {index+1}</span>
 </div>
 }
 {image && (
-<button onClick={e => { e.stopPropagation(); fileRef.current.click(); }} style={{ position:“absolute”, bottom:6, right:6, fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, fontSize:10, background:“rgba(0,0,0,0.72)”, color:”#fff”, border:“2px solid rgba(255,255,255,0.6)”, padding:“3px 8px”, cursor:“pointer”, borderRadius:3 }}>
-Change
-</button>
+<button onClick={e => { e.stopPropagation(); fileRef.current.click(); }} style={{ position:“absolute”, bottom:6, right:6, fontFamily:”‘Comic Neue’,cursive”, fontWeight:700, fontSize:10, background:“rgba(0,0,0,0.72)”, color:”#fff”, border:“2px solid rgba(255,255,255,0.6)”, padding:“3px 8px”, cursor:“pointer”, borderRadius:3 }}>Change</button>
 )}
 <input ref={fileRef} type=“file” accept=“image/*” style={{ display:“none” }} onChange={e => e.target.files[0] && read(e.target.files[0])}/>
-{bubbles.map(b => <ComicBubble key={b.id} bubble={b} onDelete={onDelete} onMove={onMove} panelRef={panelRef}/>)}
+{bubbles.map(b => <ComicBubble key={b.id} bubble={b} onDelete={onDelete} onMove={onMove} onTransform={onTransform} panelRef={panelRef}/>)}
 </div>
 );
 }
 
-/* ── App ── */
 export default function ComicMaker() {
 const [layout,      setLayout]      = useState(LAYOUTS[0]);
 const [st,          setSt]          = useState(STYLES[0]);
@@ -273,7 +342,6 @@ const [panel,       setPanel]       = useState(0);
 const [showLibrary, setShowLibrary] = useState(false);
 const [library,     setLibrary]     = useState([]);
 const [saveStatus,  setSaveStatus]  = useState(“idle”);
-const [saveError,   setSaveError]   = useState(””);
 
 const page    = pages[pageIdx];
 const images  = page.images;
@@ -281,32 +349,31 @@ const bubbles = page.bubbles;
 const pc      = layout.panels;
 
 const updatePage = (fn) => setPages(ps => ps.map((p,i) => i===pageIdx ? {…p,…fn(p)} : p));
-const upload   = (i,src) => updatePage(p => ({ images:{…p.images,[i]:src} }));
-const delB     = id      => updatePage(p => ({ bubbles:p.bubbles.filter(b=>b.id!==id) }));
-const moveB    = (id,x,y)=> updatePage(p => ({ bubbles:p.bubbles.map(b=>b.id===id?{…b,x,y}:b) }));
-const addBub   = ()      => { if (!bubText.trim()) return; updatePage(p => ({ bubbles:[…p.bubbles,{id:Date.now(),type:tool,text:bubText,x:12,y:12,panel,color:sfxColor}] })); setBubText(””); };
-const addSfx   = sfx     => updatePage(p => ({ bubbles:[…p.bubbles,{id:Date.now(),type:“sfx”,text:sfx,x:20,y:20,panel,color:sfxColor}] }));
-const chLayout = l       => { setLayout(l); setPages(ps=>ps.map(p=>({…p,images:{},bubbles:[]}))); setPanel(0); };
+const upload     = (i,src) => updatePage(p => ({ images:{…p.images,[i]:src} }));
+const delB       = id      => updatePage(p => ({ bubbles:p.bubbles.filter(b=>b.id!==id) }));
+const moveB      = (id,x,y)=> updatePage(p => ({ bubbles:p.bubbles.map(b=>b.id===id?{…b,x,y}:b) }));
+const transformB = (id, scaleDelta, angleDelta) => updatePage(p => ({
+bubbles: p.bubbles.map(b => b.id===id ? {
+…b,
+scale:    Math.max(0.3, Math.min(4, (b.scale !== undefined ? b.scale : 1) * scaleDelta)),
+rotation: (b.rotation !== undefined ? b.rotation : 0) + angleDelta,
+} : b)
+}));
+const addBub   = () => { if (!bubText.trim()) return; updatePage(p => ({ bubbles:[…p.bubbles,{id:Date.now(),type:tool,text:bubText,x:12,y:12,panel,color:sfxColor,scale:1,rotation:0}] })); setBubText(””); };
+const addSfx   = sfx => updatePage(p => ({ bubbles:[…p.bubbles,{id:Date.now(),type:“sfx”,text:sfx,x:20,y:20,panel,color:sfxColor,scale:1,rotation:-8}] }));
+const chLayout = l   => { setLayout(l); setPages(ps=>ps.map(p=>({…p,images:{},bubbles:[]}))); setPanel(0); };
 
 const addPage    = () => { setPages(ps=>[…ps,newPage()]); setPageIdx(pages.length); setPanel(0); };
 const deletePage = () => { if (pages.length===1) return; setPages(ps=>ps.filter((_,i)=>i!==pageIdx)); setPageIdx(i=>Math.max(0,i-1)); setPanel(0); };
 const goTo       = (i) => { setPageIdx(i); setPanel(0); };
 
-/* ── Save to in-memory library ── */
 const saveComic = () => {
-const entry = {
-title, layoutId: layout.id, layoutLabel: layout.label,
-styleId: st.id, styleName: st.label,
-pages: JSON.parse(JSON.stringify(pages)), // deep copy
-pageCount: pages.length,
-savedAt: Date.now(),
-};
+const entry = { title, layoutId:layout.id, layoutLabel:layout.label, styleId:st.id, styleName:st.label, pages:JSON.parse(JSON.stringify(pages)), pageCount:pages.length, savedAt:Date.now() };
 setLibrary(lib => [entry, …lib]);
 setSaveStatus(“saved”);
 setTimeout(() => setSaveStatus(“idle”), 2000);
 };
 
-/* ── Load from library ── */
 const loadComic = (entry) => {
 setTitle(entry.title);
 setLayout(LAYOUTS.find(l => l.id === entry.layoutId) || LAYOUTS[0]);
@@ -316,10 +383,9 @@ setPageIdx(0);
 setPanel(0);
 };
 
-/* ── Delete from library ── */
 const deleteFromLibrary = (idx) => setLibrary(lib => lib.filter((_, i) => i !== idx));
 
-const pp = (i) => ({ index:i, st, image:images[i], onUpload:upload, bubbles:bubbles.filter(b=>b.panel===i), onDelete:delB, onMove:moveB, selected:panel===i, onSelect:setPanel });
+const pp = (i) => ({ index:i, st, image:images[i], onUpload:upload, bubbles:bubbles.filter(b=>b.panel===i), onDelete:delB, onMove:moveB, onTransform:transformB, selected:panel===i, onSelect:setPanel });
 
 const renderGrid = () => {
 const g = layout.grid;
@@ -346,82 +412,80 @@ if (g===“2+1”) return (
 );
 };
 
-const saveLabel = { idle:“💾 SAVE”, saved:“✅ SAVED!” }[saveStatus] || “💾 SAVE”;
+const saveLabel = saveStatus === “saved” ? “SAVED!” : “SAVE”;
 const saveBg    = saveStatus === “saved” ? “#00C853” : “#FF1744”;
 
 return (
-<div style={{ width:“100vw”, height:“100vh”, display:“flex”, flexDirection:“column”, overflow:“hidden”, background:”#111” }}>
+<div style={{ width:“100vw”, height:“100dvh”, display:“flex”, flexDirection:“column”, overflow:“hidden”, background:”#111” }}>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700&display=swap" rel="stylesheet"/>
 
 ```
   {showLibrary && <Library onClose={() => setShowLibrary(false)} onLoad={loadComic} entries={library} onDelete={deleteFromLibrary}/>}
 
-  {/* ══ COMIC ══ */}
-  <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", padding:"8px 8px 4px" }}>
-    <div style={{ background:st.titleBg, borderBottom:"4px solid "+(st.id==="neon"?"#7C4DFF":"#111"), padding:"6px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-      <input value={title} onChange={e=>setTitle(e.target.value)} style={{ fontFamily:"'Bangers',cursive", fontSize:28, letterSpacing:4, color:st.titleColor, background:"transparent", border:"none", outline:"none", WebkitTextStroke:st.id==="neon"?"1px #7C4DFF":"2px #111", textShadow:st.id==="neon"?"0 0 10px currentColor":"2px 2px 0 #111", maxWidth:"75%", cursor:"text" }}/>
+  <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", padding:"6px 6px 3px" }}>
+    <div style={{ background:st.titleBg, borderBottom:"4px solid "+(st.id==="neon"?"#7C4DFF":"#111"), padding:"5px 14px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+      <input value={title} onChange={e=>setTitle(e.target.value)} style={{ fontFamily:"'Bangers',cursive", fontSize:26, letterSpacing:4, color:st.titleColor, background:"transparent", border:"none", outline:"none", WebkitTextStroke:st.id==="neon"?"1px #7C4DFF":"2px #111", textShadow:st.id==="neon"?"0 0 10px currentColor":"2px 2px 0 #111", maxWidth:"75%", cursor:"text" }}/>
       <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:10, fontWeight:700, color:st.titleColor, opacity:0.55 }}>ISSUE #1</span>
     </div>
-    <div style={{ flex:1, background:st.comicBg, padding:8, overflow:"hidden" }}>{renderGrid()}</div>
-    <div style={{ background:st.footerBg, padding:"2px 14px", display:"flex", justifyContent:"space-between", flexShrink:0 }}>
+    <div style={{ flex:1, background:st.comicBg, padding:6, overflow:"hidden" }}>{renderGrid()}</div>
+    <div style={{ background:st.footerBg, padding:"2px 12px", display:"flex", justifyContent:"space-between", flexShrink:0 }}>
       <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:9, color:st.footerFg, fontWeight:700 }}>COMIX FORGE</span>
       <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:9, color:st.footerFg, opacity:0.45 }}>pg. {pageIdx+1} of {pages.length}</span>
     </div>
   </div>
 
-  {/* ══ TOOLBAR ══ */}
-  <div style={{ flexShrink:0, height:104, background:T.bg, borderTop:"4px solid "+T.border, boxShadow:"0 -3px 0 #FFD600", overflowX:"auto", overflowY:"hidden", WebkitOverflowScrolling:"touch" }}>
-    <div style={{ display:"flex", alignItems:"center", height:"100%", minWidth:"max-content", padding:"0 6px" }}>
+  <div style={{ flexShrink:0, height:90, background:T.bg, borderTop:"4px solid "+T.border, boxShadow:"0 -3px 0 #FFD600", overflowX:"auto", overflowY:"hidden", WebkitOverflowScrolling:"touch" }}>
+    <div style={{ display:"flex", alignItems:"center", height:"100%", minWidth:"max-content", padding:"0 4px" }}>
 
-      {/* LIBRARY */}
-      <Section label="LIBRARY" minW={190}>
-        <button onClick={() => setShowLibrary(true)} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"6px 12px", background:"#FFD600", color:"#111", border:"2px solid #111", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>
-          📚 LIBRARY {library.length > 0 && "("+library.length+")"}
+      <Section label="LIBRARY" minW={170}>
+        <button onClick={() => setShowLibrary(true)} style={{ fontFamily:"'Bangers',cursive", fontSize:12, padding:"5px 10px", background:"#FFD600", color:"#111", border:"2px solid #111", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>
+          LIBRARY {library.length > 0 && "("+library.length+")"}
         </button>
-        <button onClick={saveComic} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"6px 12px", background:saveBg, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap", transition:"background .2s" }}>{saveLabel}</button>
+        <button onClick={saveComic} style={{ fontFamily:"'Bangers',cursive", fontSize:12, padding:"5px 10px", background:saveBg, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap", transition:"background .2s" }}>
+          {saveLabel}
+        </button>
       </Section>
       <Divider/>
 
-      {/* PAGES */}
-      <Section label="PAGES" minW={255}>
-        <button onClick={() => goTo(Math.max(0,pageIdx-1))} disabled={pageIdx===0} style={{ fontFamily:"'Bangers',cursive", fontSize:18, width:32, height:32, border:"2px solid #ccc", background:pageIdx===0?"#eee":"#f5f5f5", color:pageIdx===0?"#ccc":T.fg, cursor:pageIdx===0?"default":"pointer", borderRadius:3, boxShadow:"1px 1px 0 #ddd" }}>◀</button>
-        <span style={{ fontFamily:"'Bangers',cursive", fontSize:14, color:T.fg, letterSpacing:1, minWidth:60, textAlign:"center" }}>{pageIdx+1} / {pages.length}</span>
-        <button onClick={() => goTo(Math.min(pages.length-1,pageIdx+1))} disabled={pageIdx===pages.length-1} style={{ fontFamily:"'Bangers',cursive", fontSize:18, width:32, height:32, border:"2px solid #ccc", background:pageIdx===pages.length-1?"#eee":"#f5f5f5", color:pageIdx===pages.length-1?"#ccc":T.fg, cursor:pageIdx===pages.length-1?"default":"pointer", borderRadius:3, boxShadow:"1px 1px 0 #ddd" }}>▶</button>
-        <button onClick={addPage} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"5px 10px", background:"#FF1744", color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>+ PAGE</button>
-        {pages.length>1 && <button onClick={deletePage} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"5px 10px", background:"#fff", color:"#FF1744", border:"2px solid #FF1744", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>DEL</button>}
+      <Section label="PAGES" minW={230}>
+        <button onClick={() => goTo(Math.max(0,pageIdx-1))} disabled={pageIdx===0} style={{ fontFamily:"'Bangers',cursive", fontSize:16, width:28, height:28, border:"2px solid #ccc", background:pageIdx===0?"#eee":"#f5f5f5", color:pageIdx===0?"#ccc":T.fg, cursor:pageIdx===0?"default":"pointer", borderRadius:3 }}>&#9664;</button>
+        <span style={{ fontFamily:"'Bangers',cursive", fontSize:13, color:T.fg, letterSpacing:1, minWidth:50, textAlign:"center" }}>{pageIdx+1} / {pages.length}</span>
+        <button onClick={() => goTo(Math.min(pages.length-1,pageIdx+1))} disabled={pageIdx===pages.length-1} style={{ fontFamily:"'Bangers',cursive", fontSize:16, width:28, height:28, border:"2px solid #ccc", background:pageIdx===pages.length-1?"#eee":"#f5f5f5", color:pageIdx===pages.length-1?"#ccc":T.fg, cursor:pageIdx===pages.length-1?"default":"pointer", borderRadius:3 }}>&#9654;</button>
+        <button onClick={addPage} style={{ fontFamily:"'Bangers',cursive", fontSize:12, padding:"4px 8px", background:"#FF1744", color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>+ PAGE</button>
+        {pages.length>1 && <button onClick={deletePage} style={{ fontFamily:"'Bangers',cursive", fontSize:12, padding:"4px 8px", background:"#fff", color:"#FF1744", border:"2px solid #FF1744", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb", whiteSpace:"nowrap" }}>DEL</button>}
       </Section>
       <Divider/>
 
-      <Section label="LAYOUT" minW={235}>
+      <Section label="LAYOUT" minW={215}>
         {LAYOUTS.map(l=><TBtn key={l.id} active={layout.id===l.id} onClick={()=>chLayout(l)}>{l.label}</TBtn>)}
       </Section>
       <Divider/>
 
-      <Section label="STYLE" minW={220}>
+      <Section label="STYLE" minW={205}>
         {STYLES.map(s=><TBtn key={s.id} active={st.id===s.id} onClick={()=>setSt(s)}>{s.label}</TBtn>)}
       </Section>
       <Divider/>
 
-      <Section label="BUBBLE TYPE" minW={255}>
+      <Section label="BUBBLE TYPE" minW={235}>
         {BUBBLE_TYPES.map(bt=><TBtn key={bt.id} active={tool===bt.id} onClick={()=>setTool(bt.id)}>{bt.label}</TBtn>)}
       </Section>
       <Divider/>
 
-      <Section label={"TEXT → PANEL "+(panel+1)} minW={255}>
-        <input value={bubText} onChange={e=>setBubText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addBub()} placeholder="Type & hit Enter…"
-          style={{ fontFamily:"'Comic Neue',cursive", fontWeight:700, fontSize:12, width:150, border:"2px solid #ccc", background:T.input, color:T.fg, padding:"5px 8px", outline:"none", borderRadius:3, boxShadow:"inset 1px 1px 3px #eee" }}/>
-        <button onClick={addBub} style={{ fontFamily:"'Bangers',cursive", fontSize:15, padding:"5px 14px", background:T.accent, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb" }}>ADD</button>
+      <Section label={"TEXT - PANEL "+(panel+1)} minW={235}>
+        <input value={bubText} onChange={e=>setBubText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addBub()} placeholder="Type and hit Enter"
+          style={{ fontFamily:"'Comic Neue',cursive", fontWeight:700, fontSize:12, width:140, border:"2px solid #ccc", background:T.input, color:T.fg, padding:"4px 7px", outline:"none", borderRadius:3, boxShadow:"inset 1px 1px 3px #eee" }}/>
+        <button onClick={addBub} style={{ fontFamily:"'Bangers',cursive", fontSize:14, padding:"4px 12px", background:T.accent, color:"#fff", border:"2px solid #c00", cursor:"pointer", borderRadius:3, letterSpacing:1, boxShadow:"2px 2px 0 #bbb" }}>ADD</button>
       </Section>
       <Divider/>
 
-      <Section label={"SFX → PANEL "+(panel+1)} minW={355}>
-        {SFX_COLORS.map(c=><div key={c} onClick={()=>setSfxColor(c)} style={{ width:19, height:19, background:c, border:"3px solid "+(sfxColor===c?"#111":"#ddd"), cursor:"pointer", borderRadius:3, flexShrink:0 }}/>)}
-        <div style={{ width:1, background:"#ddd", height:22, margin:"0 4px", flexShrink:0 }}/>
-        {SFX_LIST.map(sfx=><button key={sfx} onClick={()=>addSfx(sfx)} style={{ fontFamily:"'Bangers',cursive", fontSize:14, padding:"3px 7px", border:"2px solid #ddd", background:"#f5f5f5", color:sfxColor, WebkitTextStroke:"0.5px #333", cursor:"pointer", borderRadius:3, whiteSpace:"nowrap", boxShadow:"1px 1px 0 #ddd" }}>{sfx}</button>)}
+      <Section label={"SFX - PANEL "+(panel+1)} minW={330}>
+        {SFX_COLORS.map(c=><div key={c} onClick={()=>setSfxColor(c)} style={{ width:17, height:17, background:c, border:"3px solid "+(sfxColor===c?"#111":"#ddd"), cursor:"pointer", borderRadius:3, flexShrink:0 }}/>)}
+        <div style={{ width:1, background:"#ddd", height:20, margin:"0 3px", flexShrink:0 }}/>
+        {SFX_LIST.map(sfx=><button key={sfx} onClick={()=>addSfx(sfx)} style={{ fontFamily:"'Bangers',cursive", fontSize:13, padding:"2px 6px", border:"2px solid #ddd", background:"#f5f5f5", color:sfxColor, WebkitTextStroke:"0.5px #333", cursor:"pointer", borderRadius:3, whiteSpace:"nowrap", boxShadow:"1px 1px 0 #ddd" }}>{sfx}</button>)}
       </Section>
 
-      <div style={{ padding:"0 20px", flexShrink:0 }}>
-        <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:9, fontWeight:700, color:"#bbb", whiteSpace:"nowrap" }}>Click panel to select • drag bubbles to move</span>
+      <div style={{ padding:"0 16px", flexShrink:0 }}>
+        <span style={{ fontFamily:"'Comic Neue',cursive", fontSize:9, fontWeight:700, color:"#bbb", whiteSpace:"nowrap" }}>Click panel to select - drag to move - pinch to resize/rotate</span>
       </div>
     </div>
   </div>

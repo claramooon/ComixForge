@@ -17,30 +17,32 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
-      - name: Fix smart punctuation
-        run: |
-          python3 -c "
-          import os
-          lq = chr(0x201c)
-          rq = chr(0x201d)
-          ls = chr(0x2018)
-          rs = chr(0x2019)
-          el = chr(0x2026)
-          nd = chr(0x2013)
-          md = chr(0x2014)
-          for root, dirs, files in os.walk('src'):
-              for f in files:
-                  if f.endswith('.jsx'):
-                      path = os.path.join(root, f)
-                      t = open(path, encoding='utf-8', errors='replace').read()
-                      t = t.replace(lq,'\"').replace(rq,'\"')
-                      t = t.replace(ls,\"'\").replace(rs,\"'\")
-                      t = t.replace(el,'...').replace(nd,'-').replace(md,'--')
-                      open(path,'w', encoding='utf-8').write(t)
-                      print('Fixed:', path)
-          "
 
+      - name: Fix smart quotes
+        run: |
+          python3 << 'PYEOF'
+          import os
+          replacements = [
+              (b'\xe2\x80\x9c', b'"'),
+              (b'\xe2\x80\x9d', b'"'),
+              (b'\xe2\x80\x98', b"'"),
+              (b'\xe2\x80\x99', b"'"),
+              (b'\xe2\x80\xa6', b'...'),
+              (b'\xe2\x80\x93', b'-'),
+              (b'\xe2\x80\x94', b'-'),
+          ]
+          for root, dirs, files in os.walk('src'):
+              for fname in files:
+                  if fname.endswith('.jsx') or fname.endswith('.js'):
+                      path = os.path.join(root, fname)
+                      with open(path, 'rb') as f:
+                          data = f.read()
+                      for bad, good in replacements:
+                          data = data.replace(bad, good)
+                      with open(path, 'wb') as f:
+                          f.write(data)
+                      print('Fixed:', path)
+          PYEOF
 
       - name: Build
         run: npm run build

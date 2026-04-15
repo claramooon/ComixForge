@@ -496,4 +496,4 @@ return (
 );
 }
 
-ReactDOM.createRoot(document.getElementById(“root”)).render(<ComicMaker />);
+ReactDOM.createRoot(document.getElementById(‘root’)).render(<ComicMaker />);

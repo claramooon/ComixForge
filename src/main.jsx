@@ -461,14 +461,15 @@ return (
 );
 }
 
-function mountApp() {
-const root = document.getElementById(‘root’);
-if (root) {
-ReactDOM.createRoot(root).render(React.createElement(ComicMaker));
-} else {
-document.addEventListener(‘DOMContentLoaded’, function() {
-ReactDOM.createRoot(document.getElementById(‘root’)).render(React.createElement(ComicMaker));
+window.addEventListener(‘load’, function() {
+var el = document.getElementById(‘root’);
+if (!el) {
+document.body.innerHTML = ‘<div style="color:red;padding:20px;font-size:20px">ERROR: root div not found</div>’;
+return;
+}
+try {
+ReactDOM.createRoot(el).render(React.createElement(ComicMaker));
+} catch(e) {
+document.body.innerHTML = ’<div style="color:red;padding:20px;font-size:14px;font-family:monospace">REACT ERROR: ’ + e.message + ‘<br/>’ + e.stack + ‘</div>’;
+}
 });
-}
-}
-mountApp();

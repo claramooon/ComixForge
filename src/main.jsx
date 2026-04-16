@@ -461,6 +461,14 @@ return (
 );
 }
 
-ReactDOM.createRoot(document.getElementById(‘root’)).render(
-React.createElement(ComicMaker)
-);
+function mountApp() {
+const root = document.getElementById(‘root’);
+if (root) {
+ReactDOM.createRoot(root).render(React.createElement(ComicMaker));
+} else {
+document.addEventListener(‘DOMContentLoaded’, function() {
+ReactDOM.createRoot(document.getElementById(‘root’)).render(React.createElement(ComicMaker));
+});
+}
+}
+mountApp();

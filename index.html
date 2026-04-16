@@ -464,5 +464,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(<ComicMaker/>);
 ```
 
   </script>
+  <script>
+  setTimeout(function() {
+    var root = document.getElementById('root');
+    if (!root || root.innerHTML.trim() === '') {
+      document.body.style.background = 'white';
+      document.body.innerHTML = '<div style="color:red;padding:20px;font-size:16px">Root is empty - Babel may have failed to compile</div>';
+    }
+  }, 3000);
+</script>
+
 </body>
 </html>

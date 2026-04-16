@@ -8,7 +8,10 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
+    window.onerror = function(m,s,l,c,e){ document.body.innerHTML = '<div style="color:red;padding:20px;font-size:12px;font-family:monospace">'+m+'<br/>Line:'+l+'<br/>'+(e?e.stack:'')+'</div>'; return true; };
+
     ReactDOM.createRoot(document.getElementById('root')).render(<h1 style={{color:'red'}}>HELLO!</h1>);
+    
   </script>
 </body>
 </html>
